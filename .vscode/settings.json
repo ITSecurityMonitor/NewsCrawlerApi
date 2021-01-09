@@ -1,0 +1,4 @@
+{
+    "python.pythonPath": "vscode\\Scripts\\python.exe",
+    "jupyter.jupyterServerType": "local"
+}
