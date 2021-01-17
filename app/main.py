@@ -7,6 +7,8 @@ from pydantic import BaseModel
 import feedparser
 from newspaper import Article
 
+from bs4 import BeautifulSoup
+
 from flashtext import KeywordProcessor
 import tensorflow_hub as hub
 import numpy as np
@@ -42,6 +44,10 @@ async def get_rss_entries(feed: RSSFeed):
         article.download()
         article.parse()
         post["article_text"] = article.text
+
+        if not bool(BeautifulSoup(article.summary, "html.parser").find()):
+            soup = BeautifulSoup(article.summary, "html.parser")
+            post["summary_parsed"] = soup.getText()        
 
     return posts
     
