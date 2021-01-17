@@ -45,11 +45,11 @@ async def get_rss_entries(feed: RSSFeed):
         article.parse()
         post["article_text"] = article.text
 
-        if not bool(BeautifulSoup(article.summary, "html.parser").find()):
-            soup = BeautifulSoup(article.summary, "html.parser")
+        if not bool(BeautifulSoup(post["summary"], "html.parser").find()):
+            soup = BeautifulSoup(post["summary"], "html.parser")
             post["summary_parsed"] = soup.getText() 
         else:
-            post["summary_parsed"] = article.summary 
+            post["summary_parsed"] = post["summary"]
 
     return posts
     
