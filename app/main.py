@@ -26,7 +26,7 @@ class ArticleContent(BaseModel):
 
 class ArticleClass(BaseModel):
     id: str
-    text: str
+    fulltext: str
 
 class Similarities(BaseModel):
     articles: List[ArticleClass] = []
@@ -69,7 +69,7 @@ async def extract_keywords(article: ArticleContent):
 
 @app.post("/similarities")
 async def compute_similarities(input: Similarities):
-    embeddings = embed([article.text for article in input.articles]) 
+    embeddings = embed([article.fulltext for article in input.articles]) 
 
     similarities = np.inner(embeddings, embeddings)
 
@@ -77,16 +77,20 @@ async def compute_similarities(input: Similarities):
 
     for idx, article in enumerate(input.articles):
         similarity_by_index = np.argsort(similarities[idx])[::-1]
-        
-        results[article.id] = []
-        
-        for sidx in similarity_by_index[1:]:
-                
-            sim = similarities[idx][sidx]
 
-            if sim < 0.75:
+        max_sim = 0.75
+        max_sidx = 0
+        
+        for sidx in similarity_by_index[1:]:          
+            sim = float(similarities[idx][sidx])
+
+            if sim <= max_sim:
                 continue
-            
-            results[article.id].append({"id": input.articles[sidx].id, "similaritiy": round(float(sim), 2)})
+
+            max_sim = sim
+            max_sidx = sidx          
+
+        if max_sim > 0.75:
+            results[article.id] = input.articles[max_sidx].id
 
     return results
