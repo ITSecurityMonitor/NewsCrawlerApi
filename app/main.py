@@ -44,8 +44,12 @@ async def get_rss_entries(feed: RSSFeed):
         article.download()
         article.parse()
         post["article_text"] = article.text
-        soup = BeautifulSoup(post["summary"], "html.parser")
-        post["summary_parsed"] = soup.getText()
+
+        if bool(BeautifulSoup(post["summary"], "html.parser").find()):
+            soup = BeautifulSoup(post["summary"], "html.parser")
+            post["summary_parsed"] = soup.getText() 
+        else:
+            post["summary_parsed"] = post["summary"]
 
     return posts
     
@@ -65,7 +69,7 @@ async def extract_keywords(article: ArticleContent):
 
 @app.post("/similarities")
 async def compute_similarities(input: Similarities):
-    embeddings = embed([article.fulltext for article in input.articles]) 
+    embeddings = embed([article.text for article in input.articles]) 
 
     similarities = np.inner(embeddings, embeddings)
 
