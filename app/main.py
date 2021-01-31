@@ -26,7 +26,7 @@ class ArticleContent(BaseModel):
 
 class ArticleClass(BaseModel):
     id: str
-    fulltext: str
+    text: str
 
 class Similarities(BaseModel):
     articles: List[ArticleClass] = []
