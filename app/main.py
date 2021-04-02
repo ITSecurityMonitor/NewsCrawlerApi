@@ -105,4 +105,4 @@ async def compute_similarity(input: Similarity):
 
     similarities = np.inner(embeddings, embeddings)
 
-    return float(similarities[0][0])
+    return float(similarities[0][1])
