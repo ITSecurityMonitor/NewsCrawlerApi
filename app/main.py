@@ -31,6 +31,10 @@ class ArticleClass(BaseModel):
 class Similarities(BaseModel):
     articles: List[ArticleClass] = []
 
+class Similarity(BaseModel):
+    text1: str
+    text2: str
+
 app = FastAPI()
 
 embed = hub.load("https://tfhub.dev/google/universal-sentence-encoder/4")
@@ -94,3 +98,11 @@ async def compute_similarities(input: Similarities):
             results[article.id] = input.articles[max_sidx].id
 
     return results
+
+@app.post("/similarity")
+async def compute_similarity(input: Similarity):
+    embeddings = embed([input.text1, input.text2]) 
+
+    similarities = np.inner(embeddings, embeddings)
+
+    return float(similarities[0][0])
