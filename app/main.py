@@ -82,21 +82,14 @@ async def compute_similarities(input: Similarities):
     for idx, article in enumerate(input.articles):
         similarity_by_index = np.argsort(similarities[idx])[::-1]
 
-        max_sim = 0.75
-        max_sidx = 0
+        result = []
         
         for sidx in similarity_by_index[1:]:          
             sim = float(similarities[idx][sidx])
 
-            if sim <= max_sim:
-                continue
-
-            max_sim = sim
-            max_sidx = sidx          
-
-        if max_sim > 0.75:
-            results[article.id] = input.articles[max_sidx].id
-
+            result.append([input.articles[sidx].id, sim])
+            
+        results[article.id] = result
     return results
 
 @app.post("/similarity")
@@ -105,4 +98,4 @@ async def compute_similarity(input: Similarity):
 
     similarities = np.inner(embeddings, embeddings)
 
-    return float(similarities[0][0])
+    return float(similarities[0][1])
