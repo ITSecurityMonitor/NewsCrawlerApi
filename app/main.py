@@ -82,12 +82,15 @@ async def compute_similarities(input: Similarities):
     for idx, article in enumerate(input.articles):
         similarity_by_index = np.argsort(similarities[idx])[::-1]
 
-        result = []
+        result = {}
         
-        for sidx in similarity_by_index[1:]:          
+        for sidx in similarity_by_index[0:]:          
             sim = float(similarities[idx][sidx])
 
-            result.append([input.articles[sidx].id, sim])
+            if input.articles[sidx].id == article.id:
+                continue
+
+            result[input.articles[sidx].id] = sim
             
         results[article.id] = result
     return results
